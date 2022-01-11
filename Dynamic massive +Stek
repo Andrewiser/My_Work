@@ -1,0 +1,352 @@
+#include <iostream>
+#include <conio.h>
+#include <fstream>
+#include <Windows.h>
+
+using namespace std;
+
+//для 3го варианта
+
+char* coopy(char* mas, int n)
+{
+	char* mas1 = new char[n];
+	memcpy(mas1, mas, n);
+	return mas1;
+}
+
+int main()
+{
+	SetConsoleTitleA("Ura!!!");
+	system("color F0");
+
+	char quit = 0;
+	int n = 0;
+	char* arr = new char[1];
+	char* arr1;
+
+	char inf1[100];
+	char inf2[100];
+	char inf3[100];
+
+	do
+	{
+
+		setlocale(LC_ALL, "ru");
+
+		cout << "Сейчас динамический массив из " << n << " элементов." << endl;
+		cout << "Нажмите 0 чтобы удалить элемент из динамического массива." << endl;
+		cout << "Нажмите 1 чтобы добавить элемент в динамический массив." << endl;
+		cout << "Нажмите 2 чтобы удалить элемент по индексу в данимическом массиве." << endl;
+		cout << "Нажмите 3 чтобы получить значению по индексу." << endl;
+		cout << "Нажмите 4 чтобы удалить список." << endl;
+		cout << "Нажмите 5 чтобы перевести из инфиксной в постфикснусю" << endl;
+
+		if (n == 0)
+		{
+			arr = new char[1];
+		}
+
+		char g, input;
+		cout << "Ввод: ";
+
+		do
+		{
+			g = _getch();
+
+		} while ((g < '0') || (g > '5'));
+
+		cout << g << endl;
+
+		if ((g == '0') && (n == 0)) //удаление с конца
+			cout << "Нельзя удалить элемет, так как размер массива равен 0" << endl;
+
+		if ((g == '0') && (n))
+		{
+			cout << "Удален последний элемент.";
+			--n;
+			arr[n] = '\0';
+
+		}
+
+
+		if (g == '1') // добавление в конец
+		{
+			cout << "Введите элемент: ";
+			input = _getch();
+			cout << input << endl;
+			arr[n] = input;
+			++n;
+			arr1 = new char[n];
+			memcpy(arr1, arr, n);
+			arr = new char[n + 2];
+			arr[n + 1] = input;
+			memcpy(arr, arr1, n);
+			arr[n + 2] = '\0';
+
+		}
+
+
+		if ((g == '2') && (n > 0)) // удаление по индексу
+		{
+			int	numsys = 0;
+			cout << "Введите номер элемента который нужно удалить: ";
+			input = _getch();
+			do
+			{
+
+				input = _getch();
+				if ((input >= '0') && (input <= '9'))
+				{
+					cout << input;
+					numsys = numsys * 10 + input - '0';
+				}
+			} while (input != 13);
+
+
+			cout << input << endl;
+			--numsys;
+			if (numsys < n)
+			{
+				memcpy(arr + numsys, arr + numsys + 1, strlen(arr) - 1 - numsys);
+				arr[strlen(arr) - 1] = '\0';
+				--n;
+			}
+
+		}
+
+		if (g == '3') // вывод по номеру
+		{
+			int numsys1 = 0;
+			cout << "Введите номер элемента который нужно вывести: ";
+			do
+			{
+
+				input = _getch();
+				if ((input >= '0') && (input <= '9'))
+				{
+					cout << input;
+					numsys1 = numsys1 * 10 + input - '0';
+				}
+			} while (input != 13);
+			--numsys1;
+			cout << endl << "Символ с номером " << numsys1 + 1 << " имеет значение " << arr[numsys1] << endl;
+		}
+
+		if (g == '4')
+		{
+			if (n == 0)
+				cout << "Массив и так пуст." << endl;
+			else
+			{
+
+				arr[0] = '\0';
+				n = 0;
+				cout << "Массив удален." << endl;
+			}
+		}
+
+		if (g == '5')
+		{
+			char a;
+			int counter = 0;
+			int numbers = 0;
+			int opPlus = 0;
+			int opMinus = 0;
+			int opMult = 0;
+			int opDivis = 0;
+			int bracketL = 0;
+			int bracketR = 0;
+			int braces = 0;
+			cout << "Введите выражения для преобразования из инфиксной записи в постфиксную до 100 знаков (разрешается использовать только однозначные числа): ";
+			do
+			{
+
+				a = _getch();
+				if (a != 13)
+				{
+					if (((a >= '0') && (a <= '9')) || (a == '+') || (a == '-') || (a == '*') || (a == '/') || (a == '(') || (a == ')'))
+					{
+						if ((a >= '0') && (a <= '9'))
+							numbers++;
+						if (a == '+')
+							opPlus++;
+						if (a == '-')
+							opMinus++;
+						if (a == '*')
+							opMult++;
+						if (a == '/')
+							opDivis++;
+						if (a == '(') {
+							bracketL++;
+							braces++;
+						}
+						if (a == ')') {
+							bracketR++;
+							braces++;
+						}
+						cout << a;
+						inf1[counter] = a;
+						counter++;
+					}
+
+				}
+				else
+					inf1[counter] = '\0';
+
+			} while (a != 13);
+			if ((bracketL != bracketR) || (opPlus + opMinus + opMult + opDivis) != (numbers - 1))
+				cout << endl << "Неккоректный ввод.";
+			else
+			{
+				int zer = 0, opzer = 0, numzer = 0;
+				do
+				{
+					char elem = inf1[zer];
+					switch (elem)
+					{
+					case '+':
+						if (opzer) {
+							if (inf2[opzer - 1] == '(') {
+								inf2[opzer] = elem;
+								++zer;
+								++opzer;
+							}
+							else {
+								inf3[numzer] = inf2[opzer - 1];
+								//++opzer;
+								inf2[opzer - 1] = elem;
+								++zer;
+								++numzer;
+							}
+						}
+						else {
+							inf2[opzer] = elem;
+							++zer;
+							++opzer;
+						}
+						break;
+					case '-':
+						if (opzer) {
+							if (inf2[opzer - 1] == '(') {
+								inf2[opzer] = elem;
+								++zer;
+								++opzer;
+							}
+							else {
+								inf3[numzer] = inf2[opzer - 1];
+								//++opzer;
+								inf2[opzer - 1] = elem;
+								++zer;
+								++numzer;
+							}
+						}
+						else {
+							inf2[opzer] = elem;
+							++zer;
+							++opzer;
+						}
+						break;
+					case '*':
+						if (opzer) {
+							if ((inf2[opzer - 1] == '(') || (inf2[opzer - 1] == '+') || (inf2[opzer - 1] == '-')) {
+								inf2[opzer] = elem;
+								++opzer;
+								++zer;
+							}
+							else if ((inf2[opzer - 1] == '*') || (inf2[opzer - 1] == '/')) {
+								inf3[numzer] = inf2[opzer - 1];
+								inf2[opzer - 1] = elem;
+								//opzer;
+								++zer;
+								++numzer;
+							}
+						}
+						else {
+							inf2[opzer] = elem;
+							++zer;
+							++opzer;
+						}
+						break;
+					case '/':
+						if (opzer) {
+							if ((inf2[opzer - 1] == '(') || (inf2[opzer - 1] == '+') || (inf2[opzer - 1] == '-')) {
+								inf2[opzer] = elem;
+								++opzer;
+								++zer;
+							}
+							else if ((inf2[opzer - 1] == '*') || (inf2[opzer - 1] == '/')) {
+								inf3[numzer] = inf2[opzer - 1];
+								inf2[opzer - 1] = elem;
+								++zer;
+								++numzer;
+							}
+						}
+						else {
+							inf2[opzer] = elem;
+							++zer;
+							++opzer;
+						}
+						break;
+					case ')':
+						while (inf2[opzer - 1] != '(')
+						{
+							inf3[numzer] = inf2[opzer - 1];
+							--opzer;
+							//++zer;
+							++numzer;
+						}
+						if (inf2[opzer - 1] != '(')
+							--opzer;
+						--opzer;
+						++zer;
+
+						break;
+					case '(':
+						inf2[opzer] = elem;
+						++opzer;
+						++zer;
+						break;
+					default:
+						inf3[numzer] = elem;
+						++numzer;
+						++zer;
+						break;
+					}
+					//++zer;
+					if (zer == counter) {
+						while (opzer) {
+							inf3[numzer] = inf2[opzer - 1];
+							++numzer;
+							--opzer;
+						}
+					}
+					//if ((elem >= '0') && (elem <= '9'))
+				} while (zer < counter);
+				cout << endl;
+				for (int i = 0; i < counter - braces; i++)
+					cout << inf3[i] << " ";
+			}
+		}
+
+		if ((n != 0) && (g != '5'))
+		{
+			cout << "Содержимое динамического массива: ";
+			for (int i = 0; i < n; i++)
+				cout << arr[i] << " ";
+		}
+
+		cout << endl << "Для продолжения нажмите любую клавишу, для выхода ESC.";
+
+		quit = _getch();
+
+		system("cls");
+
+	} while (quit != 27);
+
+	delete[] arr;
+
+	return 0;
+}
+
+
+
